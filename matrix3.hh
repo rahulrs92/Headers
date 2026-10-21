@@ -55,6 +55,11 @@ template <size_t m,class T = double> matrix<m,m,T> eye();
 template <size_t m,class T = double> matrix<m,m,T> eye(T it);
 template <size_t m,class T = double> matrix<m,m,T> eye(array<T,m> ita);
 
+// --- Valarray IO ---
+template <class T> ostream& operator<< (ostream& os, const valarray<T>& V)
+{
+	for(size_t i=0; i<V.size(); i++) os<<V[i]<<" "; return os;
+}
 
 // --- LU Decomposition for Inversion and Determinant ---
 template <size_t N> class LUSolver
@@ -128,6 +133,13 @@ public:
         return X;
     }
 };
+
+// --- Helper for isnan ---
+template <class T> bool isnan(const valarray<T>& iv)
+{
+    for(auto a : iv) if(isnan(a)) { return 1; break; }
+    return 0;
+}
 
 // --- Matrix Base Class ---
 template <size_t m, size_t n, class T> class matrix_base
@@ -277,7 +289,11 @@ public:
     {
         matrix<m,o,T> Mp = T(V[0] * 0); // Inits to 0
         for(size_t i=0; i<m; i++) for(size_t j=0; j<o; j++) for(size_t k=0; k<n; k++) 
-            Mp(i,j) += (*this)(i,k) * iM(k,j);
+        {
+            T otv = (*this)(i,k) * iM(k,j);
+            Mp(i,j) += otv;
+            // if(isnan(otv)) cerr<<"matrix3: NaN error at "<<i<<", "<<j<<", "<<k<<": "<<(*this)(i,k)<<endl;
+        }
         return Mp;
     }
 
@@ -917,11 +933,7 @@ template <size_t m,class T> matrix<m,1,T>::matrix(ref_matrix<m,1,T> irV) : matri
     for(size_t i=0; i<m; i++) V[i] = irV[i];
 }
 
-// --- IO ---
-template <class T> ostream& operator<< (ostream& os, const valarray<T>& V)
-{
-	for(size_t i=0; i<V.size(); i++) os<<V[i]<<" "; return os;
-}
+// --- Matrix IO ---
 template <size_t m,size_t n,class T = double> ostream& operator<< (ostream& os, matrix<m,n,T> iM)
 {
     ios init(NULL); init.copyfmt(os);

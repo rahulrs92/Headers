@@ -93,6 +93,7 @@ protected:
 			for(int i=0; i<nc; i++) { Ci[i] = T(i+1); Zr[i] = T(0); }
 		}
 
+		aCi.clear(); // IMPORTANT: Clear previous references first!
 		aCi.set_row(0);
 		for(int i=0; i<nc; i++) aCi.push_back(Ci[i]);
 		//for(int i=0; i<=nr; i++) aRi.push_back(Ri[i]);
@@ -110,6 +111,7 @@ public:
 	Data(const char* name)
 	{
 		read(name);
+		// cout<<"YOOOO!"<<endl;
 		TT = "Data";
 		L = vector<string>(nc + 1,"Column ");
 		L[0] = "Row no.";
@@ -145,12 +147,16 @@ public:
 
 	Data& operator = (const Data& iD)
 	{
-		C = iD.C;
-		nr = iD.nr;
-		nc = iD.nc;
-		TT = iD.TT;
-		L = iD.L;
-		update();
+		if (this != &iD)
+		{
+			C = iD.C;
+			nr = iD.nr;
+			nc = iD.nc;
+			TT = iD.TT;
+			L = iD.L;
+			update(); // Rebuilds Ci, Ri, Zc, Zr, AND resets aCi references to local memory
+		}
+	    return *this; // Fixes the trace trap
 	}
 
 	friend Data operator + (const Data& iD);
@@ -232,10 +238,10 @@ public:
 				 * When non-numeric values are encountered, float and double would
 				 * store NaN, whereas int would store 0.
 				 */
+				string ts;
 				if constexpr (is_same<U,double>::value || is_same<U,float>::value || is_same<U,int>::value)
 				{
 					double td;
-					string ts;
 					f>>td;
 					if(f.fail())
 					{
@@ -247,7 +253,7 @@ public:
 					if constexpr (is_same<U,int>::value)
 					{
 						if(td != double(int(td)) && !isnan(td))
-							cerr<<"Precise value floored at "<<i<<","<<j<<" from "<<td<<" to "<<int(td)<<"!"<<endl;
+						cerr<<"Precise value floored at "<<i<<","<<j<<" from "<<td<<" to "<<int(td)<<"!"<<endl;
 						oC[j][i] = (isnan(td) ? 0 : int(td));
 					}
 					else
@@ -257,7 +263,8 @@ public:
 				}
 				else
 				{
-					f>>oC[j][i];
+					f>>ts;
+					oC[j][i] = ts;
 				}
 			}
 		}
