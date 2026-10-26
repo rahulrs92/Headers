@@ -834,6 +834,11 @@ public:
     
     T& operator [] (size_t ii) { return ptr[Vi[ii]]; }
     const T& operator [] (size_t ii) const { return ptr[Vi[ii]]; } // Const added
+
+    void operator += (T it) { for(size_t i=0; i<m*n; i++) ptr[Vi[i]] += it; }
+    void operator -= (T it) { for(size_t i=0; i<m*n; i++) ptr[Vi[i]] -= it; }
+    void operator *= (T it) { for(size_t i=0; i<m*n; i++) ptr[Vi[i]] *= it; }
+    void operator /= (T it) { for(size_t i=0; i<m*n; i++) ptr[Vi[i]] /= it; }
     
     operator matrix<m,1,T> () { matrix<m,1,T> oM; for(size_t i=0; i<m; i++) oM[i] = ptr[Vi[i]]; return oM; }
     operator valarray<T> () { valarray<T> V(m); for(size_t i=0; i<m; i++) V[i] = ptr[Vi[i]]; return V; }
