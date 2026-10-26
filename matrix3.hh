@@ -312,9 +312,9 @@ public:
         return solver.solve(*this);
     }
     
-    T norm() const { T nrm(0); for(size_t i=0; i<m*n; i++) nrm += V[i]*V[i]; return sqrt(nrm); }
+    T norm() const { T nrm = (*this)(0,0) * 0; for(size_t i=0; i<m*n; i++) nrm += V[i]*V[i]; return sqrt(nrm); }
 
-    T trace() const { T tr(0); for(size_t i=0; i<min(m,n); i++) tr += (*this)(i,i); return tr; }
+    T trace() const { T tr = (*this)(0,0) * 0; for(size_t i=0; i<min(m,n); i++) tr += (*this)(i,i); return tr; }
 
     // --- RESTORED VALARRAY INTEROPERABILITY ---
     // Allows Matrix<double> + Matrix<valarray<double>> = Matrix<valarray<double>>
@@ -615,8 +615,8 @@ public:
     
     matrix<m,m,T> operator ^ (int ip)
     {
-        matrix<m,m,T> oM, iM = (ip<0 ? inv() : *this);
-        oM.diag() = 1;
+        matrix<m,m,T> oM((*this)(0,0) * 0), iM = (ip<0 ? inv() : *this);
+        oM.diag() = pow(oM(0,0),0);
         for(int i=0; i<abs(ip); i++) oM = oM * iM;
         return oM;
     }
@@ -653,7 +653,8 @@ public:
     matrix<m, m, T> inv()
     {
         matrix<m, m, T> A = (*this).clone(), I;
-        I.diag() = 1;
+        for (size_t i = 0; i < m; i++) for (size_t j = 0; j < m; j++) I(i,j) = A(i,j) * 0;
+        I.diag() = pow(I(0,0),0);
         for (size_t i = 0; i < m; i++)
 		{
             T pivot = A(i, i);
@@ -666,6 +667,7 @@ public:
                     for (size_t j = 0; j < m; j++) { A(k, j) -= factor * A(i, j); I(k, j) -= factor * I(i, j); }
                 }
             }
+            // cout << "I(0,0): " << I(0,0) << endl;
         }
         return I;
     }
