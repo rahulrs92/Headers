@@ -159,7 +159,7 @@ public:
 	    return *this; // Fixes the trace trap
 	}
 
-	friend Data operator + (const Data& iD);
+	friend Data operator + (const Data<T>& iD);
 	
 	vector<vector<T>> dataset() const { return C; }
 	
