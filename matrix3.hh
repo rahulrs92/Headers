@@ -577,8 +577,8 @@ template <class T> matrix<3,1,T> operator*(matrix<3,1,T> a, matrix<3,1,T> b)
 }
 
 template <size_t m,class T> matrix<m,m,T> eye() { matrix<m,m,T> oM; for(size_t i=0; i<m; i++) oM(i,i) = T(1); return oM; }
-template <size_t m,class T> matrix<m,m,T> eye(T it) { matrix<m,m,T> oM; for(size_t i=0; i<m; i++) oM(i,i) = it; return oM; }
-template <size_t m,class T> matrix<m,m,T> eye(array<T,m> ita) { matrix<m,m,T> oM; for(size_t i=0; i<m; i++) oM(i,i) = ita[i]; return oM; }
+template <size_t m,class T> matrix<m,m,T> eye(T it) { matrix<m,m,T> oM = T(it[0]*0); for(size_t i=0; i<m; i++) oM(i,i) = it; return oM; }
+template <size_t m,class T> matrix<m,m,T> eye(array<T,m> ita) { matrix<m,m,T> oM = T(ita[0]*0); for(size_t i=0; i<m; i++) oM(i,i) = ita[i]; return oM; }
 
 // --- Concrete Matrix Class ---
 template <size_t m,size_t n,class T> class matrix : public matrix_base<m,n,T>
